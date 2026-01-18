@@ -1,0 +1,36 @@
+[Unit]
+Description=Full-Stack Application
+Documentation=https://github.com/yourusername/fullstack-boilerplate
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=appuser
+Group=appuser
+WorkingDirectory=/opt/fullstack-app
+
+# Environment
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+EnvironmentFile=-/opt/fullstack-app/.env
+
+# Start command
+ExecStart=/usr/bin/podman-compose -f infrastructure/podman/compose.yml -f infrastructure/podman/compose.prod.yml up
+
+# Stop command
+ExecStop=/usr/bin/podman-compose -f infrastructure/podman/compose.yml -f infrastructure/podman/compose.prod.yml down
+
+# Restart policy
+Restart=always
+RestartSec=10
+TimeoutStartSec=300
+TimeoutStopSec=60
+
+# Security hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/fullstack-app
+
+[Install]
+WantedBy=multi-user.target

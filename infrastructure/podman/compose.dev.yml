@@ -1,0 +1,23 @@
+# Development overrides
+# Usage: podman-compose -f compose.yml -f compose.dev.yml up
+
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ../..
+      dockerfile: apps/backend/Containerfile
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ../../apps/backend/src:/app/src:ro
+    command: ["node", "--watch", "dist/server.js"]
+
+  frontend:
+    ports:
+      - "3000:80"

@@ -1,0 +1,66 @@
+// Prisma schema for fullstack-boilerplate
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model
+model User {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  role        UserRole  @default(USER)
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  magicLinks MagicLink[]
+  sessions   Session[]
+
+  @@index([email])
+  @@index([role])
+  @@index([isActive])
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+// Magic link for passwordless authentication
+model MagicLink {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  email     String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+
+  @@index([token])
+  @@index([email])
+  @@index([expiresAt])
+}
+
+// Session for JWT refresh tokens
+model Session {
+  id           String   @id @default(cuid())
+  refreshToken String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@index([refreshToken])
+  @@index([userId])
+  @@index([expiresAt])
+}
