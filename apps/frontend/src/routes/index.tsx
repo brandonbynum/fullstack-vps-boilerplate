@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '../components/ui/button';
 import { useAuth } from '../hooks/useAuth';
+import { HelloWorld } from '../components/HelloWorld';
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -59,6 +60,11 @@ function HomePage() {
               Docker, CI/CD, security headers, and more
             </p>
           </div>
+        </div>
+
+        {/* Hello World E2E Example */}
+        <div className="mt-24">
+          <HelloWorld />
         </div>
       </div>
     </div>

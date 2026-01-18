@@ -17,12 +17,25 @@ if (env.NODE_ENV !== 'production') {
   global.prisma = prisma;
 }
 
-export async function connectDatabase(): Promise<void> {
+export async function connectDatabase(): Promise<boolean> {
   try {
     await prisma.$connect();
     console.log('Database connected successfully');
+    return true;
   } catch (error) {
     console.error('Database connection failed:', error);
+
+    // In development, allow server to start without database
+    // This enables testing endpoints that don't require database access (e.g., hello world)
+    if (env.NODE_ENV === 'development') {
+      console.warn(
+        'WARNING: Database connection failed. Server will start in development mode without database.'
+      );
+      console.warn('Procedures requiring database access will fail.');
+      return false;
+    }
+
+    // In production, fail fast if database is unavailable
     process.exit(1);
   }
 }

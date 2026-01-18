@@ -72,8 +72,11 @@ fullstack-boilerplate/
 
 ## Documentation
 
+- [Hello World Example](./docs/HELLO_WORLD.md) - **Start here!** Full-stack integration demo
+- [Testing Guide](./docs/TESTING.md) - Unit testing with Vitest
 - [Getting Started](./docs/GETTING_STARTED.md) - Local development setup
 - [Deployment Guide](./docs/DEPLOYMENT.md) - VPS deployment
+- [Hello World Deployment](./docs/HELLO_WORLD_DEPLOYMENT.md) - Deploy to Hetzner VPS
 - [Architecture](./docs/ARCHITECTURE.md) - System overview
 - [API Reference](./docs/API.md) - tRPC endpoints
 - [Authentication](./docs/MAGIC_LINK_AUTH.md) - Auth flow details

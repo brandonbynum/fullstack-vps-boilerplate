@@ -105,9 +105,11 @@ pnpm dev
 ```
 
 This starts:
-- **Frontend**: http://localhost:3000
+- **Frontend**: http://localhost:3000 (or 3001 if 3000 is in use)
 - **Backend**: http://localhost:4000
 - **API**: http://localhost:4000/api/trpc
+
+> **Note**: The backend will start even without a database connection in development mode. You can test the [Hello World example](./HELLO_WORLD.md) immediately without setting up the database. Features requiring database access (authentication, user management) will need the database running.
 
 ## Development Commands
 
@@ -167,13 +169,22 @@ pnpm --filter backend prisma:generate
 ### Database Connection Error
 
 ```
-Error: Can't reach database server
+WARNING: Database connection failed. Server will start in development mode without database.
 ```
 
-Make sure PostgreSQL is running:
+This is normal in development mode if you haven't set up the database yet. The backend will still start and you can test database-free features like the [Hello World example](./HELLO_WORLD.md).
+
+To set up the database for full functionality, make sure PostgreSQL is running:
 
 ```bash
 podman ps  # or docker ps
+```
+
+Then run migrations:
+
+```bash
+pnpm --filter backend db:generate
+pnpm --filter backend db:migrate
 ```
 
 ### Port Already in Use

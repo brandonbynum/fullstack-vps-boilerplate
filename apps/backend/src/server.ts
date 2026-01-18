@@ -5,13 +5,16 @@ import { logger } from './utils/logger';
 
 async function main() {
   try {
-    // Connect to database
-    await connectDatabase();
+    // Connect to database (may fail in development, that's ok)
+    const dbConnected = await connectDatabase();
 
     // Start server
     const server = app.listen(env.PORT, () => {
       logger.info(`Server running on port ${env.PORT}`);
       logger.info(`Environment: ${env.NODE_ENV}`);
+      logger.info(
+        `Database: ${dbConnected ? '✓ Connected' : '✗ Disconnected (development mode)'}`
+      );
       logger.info(`Health check: http://localhost:${env.PORT}/health`);
       logger.info(`tRPC endpoint: http://localhost:${env.PORT}/trpc`);
     });

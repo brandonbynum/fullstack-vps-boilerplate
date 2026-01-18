@@ -14,7 +14,9 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "test": "vitest",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@fullstack-boilerplate/validators": "workspace:*",
@@ -37,7 +39,9 @@
     "@types/nodemailer": "^6.4.17",
     "prisma": "^6.2.1",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^1.2.0",
+    "@vitest/ui": "^1.2.0"
   },
   "packageManager": "pnpm@10.26.1"
 }
