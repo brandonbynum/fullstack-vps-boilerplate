@@ -5,23 +5,24 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-Type=simple
+Type=oneshot
 User=appuser
 Group=appuser
 WorkingDirectory=/opt/fullstack-app
+RemainAfterExit=yes
 
 # Environment
 Environment="PATH=/usr/local/bin:/usr/bin:/bin"
 EnvironmentFile=-/opt/fullstack-app/.env
 
 # Start command
-ExecStart=/usr/bin/podman-compose -f infrastructure/podman/compose.yml -f infrastructure/podman/compose.prod.yml up
+ExecStart=/opt/fullstack-app/infrastructure/scripts/deploy-prod.sh
 
-# Stop command
-ExecStop=/usr/bin/podman-compose -f infrastructure/podman/compose.yml -f infrastructure/podman/compose.prod.yml down
+# Stop command (clean up containers)
+ExecStop=/bin/bash -c 'podman rm -f fullstack-postgres fullstack-backend fullstack-frontend fullstack-nginx 2>/dev/null || true'
 
 # Restart policy
-Restart=always
+Restart=on-failure
 RestartSec=10
 TimeoutStartSec=300
 TimeoutStopSec=60
