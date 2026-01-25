@@ -6,9 +6,9 @@ export const trpc = createTRPCReact<AppRouter>();
 
 const getBaseUrl = () => {
   if (typeof window !== 'undefined') {
-    return import.meta.env.VITE_API_URL || 'http://localhost:4000';
+    return import.meta.env.VITE_API_URL || '';
   }
-  return 'http://localhost:4000';
+  return '';
 };
 
 // Get access token from localStorage
