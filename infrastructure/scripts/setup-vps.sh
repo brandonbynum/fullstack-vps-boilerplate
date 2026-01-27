@@ -32,9 +32,9 @@ apt-get install -y \
     gnupg \
     lsb-release
 
-# Install Podman
+# Install Podman and networking dependencies
 echo "Installing Podman..."
-apt-get install -y podman podman-compose
+apt-get install -y podman podman-compose passt aardvark-dns
 
 # Verify Podman installation
 podman --version

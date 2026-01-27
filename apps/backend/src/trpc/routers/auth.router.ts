@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { router, publicProcedure, protectedProcedure } from '../trpc';
 import { authService } from '../../services/auth.service';
+import { emailService } from '../../services/email.service';
 import {
   magicLinkRequestSchema,
   magicLinkVerifySchema,
@@ -8,6 +9,11 @@ import {
 } from '@fullstack-boilerplate/validators';
 
 export const authRouter = router({
+  // Get email service status (public)
+  getEmailStatus: publicProcedure.query(() => {
+    return emailService.getEmailStatus();
+  }),
+
   // Request magic link (public)
   requestMagicLink: publicProcedure
     .input(magicLinkRequestSchema)

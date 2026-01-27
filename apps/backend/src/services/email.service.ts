@@ -81,6 +81,49 @@ class EmailService {
     }
   }
 
+  // Check if email is properly configured (no network call)
+  isEmailConfigured(): boolean {
+    // Check if all required SMTP environment variables are set and not placeholder values
+    const hasValidHost = env.SMTP_HOST &&
+      env.SMTP_HOST !== 'smtp.example.com' &&
+      !env.SMTP_HOST.includes('example');
+
+    const hasValidUser = env.SMTP_USER &&
+      env.SMTP_USER !== 'noreply@example.com' &&
+      !env.SMTP_USER.includes('example');
+
+    const hasValidPassword = env.SMTP_PASSWORD &&
+      env.SMTP_PASSWORD !== 'placeholder-smtp-password' &&
+      env.SMTP_PASSWORD !== 'placeholder';
+
+    return hasValidHost && hasValidUser && hasValidPassword;
+  }
+
+  // Get email status with appropriate message based on environment
+  getEmailStatus(): {
+    isConfigured: boolean;
+    message?: string;
+  } {
+    const isConfigured = this.isEmailConfigured();
+
+    if (isConfigured) {
+      return { isConfigured: true };
+    }
+
+    // Return helpful message in development, generic in production
+    if (env.NODE_ENV === 'development') {
+      return {
+        isConfigured: false,
+        message: 'Email service is not configured. Update SMTP settings in your .env file to enable magic link authentication. See .env.example for configuration details.',
+      };
+    }
+
+    return {
+      isConfigured: false,
+      message: 'Email service is temporarily unavailable. Please try again later or contact support.',
+    };
+  }
+
   // Verify email connection (useful for health checks)
   async verifyConnection(): Promise<boolean> {
     try {

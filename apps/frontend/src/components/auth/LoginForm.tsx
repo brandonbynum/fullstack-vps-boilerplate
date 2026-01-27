@@ -3,8 +3,10 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { useAuth } from '../../hooks/useAuth';
-import { Mail, Loader2 } from 'lucide-react';
+import { trpc } from '../../lib/trpc';
+import { Mail, Loader2, AlertCircle, Settings } from 'lucide-react';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -15,6 +17,9 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const { requestMagicLink, isPending } = useAuth();
+
+  // Check if email service is configured
+  const { data: emailStatus } = trpc.auth.getEmailStatus.useQuery();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,6 +65,9 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     );
   }
 
+  const isEmailConfigured = emailStatus?.isConfigured ?? true; // Default to true while loading
+  const emailConfigMessage = emailStatus?.message;
+
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center">
@@ -69,6 +77,23 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {!isEmailConfigured && emailConfigMessage && (
+          <Alert variant="warning" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Email Not Configured</AlertTitle>
+            <AlertDescription>
+              {emailConfigMessage}
+              {emailConfigMessage.includes('.env') && (
+                <div className="mt-2 flex items-center gap-1 text-xs">
+                  <Settings className="h-3 w-3" />
+                  <span>
+                    Configure SMTP_HOST, SMTP_USER, SMTP_PASSWORD, and EMAIL_FROM
+                  </span>
+                </div>
+              )}
+            </AlertDescription>
+          </Alert>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -79,7 +104,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              disabled={isPending.requestMagicLink}
+              disabled={isPending.requestMagicLink || !isEmailConfigured}
             />
           </div>
           {error && (
@@ -88,7 +113,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           <Button
             type="submit"
             className="w-full"
-            disabled={isPending.requestMagicLink}
+            disabled={isPending.requestMagicLink || !isEmailConfigured}
           >
             {isPending.requestMagicLink ? (
               <>

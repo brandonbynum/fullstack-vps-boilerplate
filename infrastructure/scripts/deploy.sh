@@ -56,15 +56,15 @@ for i in {1..30}; do
     sleep 2
 done
 
-# Run database migrations
-echo "Running database migrations..."
+# Sync database schema
+echo "Syncing database schema..."
 podman run --rm \
     --network fullstack-app_internal \
     -e DATABASE_URL="postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-fullstack}?schema=public" \
     -v "$APP_DIR/apps/backend:/app:Z" \
     -w /app \
     node:20-alpine \
-    sh -c "npm install -g pnpm && pnpm install --frozen-lockfile && npx prisma migrate deploy"
+    sh -c "npm install -g pnpm && pnpm install --frozen-lockfile && npx prisma@6 db push"
 
 # Start all services
 echo "Starting all services..."
@@ -79,7 +79,7 @@ echo "Running health checks..."
 
 # Check backend
 for i in {1..10}; do
-    if curl -sf http://localhost:4000/health > /dev/null 2>&1; then
+    if podman exec fullstack-backend wget -qO- http://localhost:4000/health > /dev/null 2>&1; then
         echo "Backend: OK"
         break
     fi
@@ -93,7 +93,7 @@ done
 
 # Check frontend
 for i in {1..10}; do
-    if curl -sf http://localhost:80/health > /dev/null 2>&1; then
+    if podman exec fullstack-frontend wget -qO- http://localhost:8080/health > /dev/null 2>&1; then
         echo "Frontend: OK"
         break
     fi
