@@ -48,11 +48,18 @@ RUN npm install -g pnpm
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 backend
 
-# Copy entire app directory from builder to preserve all symlinks and generated files
-COPY --from=builder /app/package.json /app/pnpm-workspace.yaml ./
-COPY --from=builder /app/apps ./apps
-COPY --from=builder /app/packages ./packages
-COPY --from=builder /app/node_modules ./node_modules
+# Copy package files for production install
+COPY --from=builder /app/package.json /app/pnpm-workspace.yaml /app/pnpm-lock.yaml ./
+COPY --from=builder /app/apps/backend/package.json ./apps/backend/
+COPY --from=builder /app/packages/validators/package.json ./packages/validators/
+
+# Install production dependencies only
+RUN pnpm install --prod --frozen-lockfile
+
+# Copy built code and generated files
+COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
+COPY --from=builder /app/apps/backend/prisma ./apps/backend/prisma
+COPY --from=builder /app/packages/validators/dist ./packages/validators/dist
 
 # Set ownership
 RUN chown -R backend:nodejs /app
