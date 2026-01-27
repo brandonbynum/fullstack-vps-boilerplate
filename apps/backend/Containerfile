@@ -61,6 +61,9 @@ COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
 COPY --from=builder /app/apps/backend/prisma ./apps/backend/prisma
 COPY --from=builder /app/packages/validators/dist ./packages/validators/dist
 
+# Generate Prisma client in production environment
+RUN cd apps/backend && npx prisma@6 generate
+
 # Set ownership
 RUN chown -R backend:nodejs /app
 
