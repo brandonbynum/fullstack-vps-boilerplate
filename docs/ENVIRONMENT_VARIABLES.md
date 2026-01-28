@@ -25,6 +25,7 @@ echo "POSTGRES_PASSWORD=$DB_PASSWORD"
 | `POSTGRES_USER` | Yes (compose) | postgres | Database username |
 | `POSTGRES_PASSWORD` | Yes (compose) | - | Database password |
 | `POSTGRES_DB` | Yes (compose) | fullstack | Database name |
+| `DEFAULT_ADMIN_EMAIL` | No | - | Email for default admin user (created during seed) |
 
 **Example:**
 ```bash
@@ -134,6 +135,9 @@ PORT=4000
 # Database
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/fullstack?schema=public
 
+# Default Admin User (optional - for seeding)
+DEFAULT_ADMIN_EMAIL=admin@example.com
+
 # JWT (use simple values for development)
 JWT_SECRET=dev-jwt-secret-change-in-production
 JWT_REFRESH_SECRET=dev-refresh-secret-change-in-production
@@ -173,6 +177,9 @@ DOMAIN=myapp.com
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=SECURE_PASSWORD_HERE
 POSTGRES_DB=myapp
+
+# Default Admin User (IMPORTANT - set this for first deployment)
+DEFAULT_ADMIN_EMAIL=admin@myapp.com
 
 # JWT
 JWT_SECRET=LONG_SECURE_SECRET_HERE

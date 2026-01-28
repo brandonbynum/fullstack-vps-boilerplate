@@ -73,6 +73,7 @@ fullstack-boilerplate/
 ## Documentation
 
 - [Hello World Example](./docs/HELLO_WORLD.md) - **Start here!** Full-stack integration demo
+- [Admin Setup](./docs/ADMIN_SETUP.md) - Create default admin user
 - [Testing Guide](./docs/TESTING.md) - Unit testing with Vitest
 - [Getting Started](./docs/GETTING_STARTED.md) - Local development setup
 - [Deployment Guide](./docs/DEPLOYMENT.md) - VPS deployment
@@ -84,6 +85,23 @@ fullstack-boilerplate/
 - [New Project Guide](./docs/SPINNING_UP_NEW_PROJECT.md) - Template usage
 - [Troubleshooting](./docs/TROUBLESHOOTING.md) - Common issues
 - [Security](./docs/SECURITY.md) - Security best practices
+
+## Admin Setup
+
+To create a default admin user:
+
+```bash
+# 1. Set the admin email in your .env file
+DEFAULT_ADMIN_EMAIL=admin@example.com
+
+# 2. Run the seed script
+pnpm --filter backend db:seed
+
+# 3. Request a magic link for that email
+# 4. Access the admin dashboard at /admin
+```
+
+The seed script runs automatically during `setup-dev.sh` and production deployments.
 
 ## Scripts
 
@@ -98,6 +116,7 @@ pnpm typecheck        # Type check
 pnpm --filter backend prisma:studio    # Open Prisma Studio
 pnpm --filter backend prisma:migrate   # Run migrations
 pnpm --filter backend prisma:generate  # Generate client
+pnpm --filter backend db:seed          # Seed database (creates admin)
 
 # Production
 ./scripts/create-new-project.sh <name>  # Create new project

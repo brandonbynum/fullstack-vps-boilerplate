@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import { trpc } from '../lib/trpc';
 import { queryClient } from '../lib/query-client';
 
@@ -12,6 +13,8 @@ export interface AuthUser {
 }
 
 export function useAuth() {
+  const navigate = useNavigate();
+
   // Get current user
   const { data: user, isLoading, error, refetch } = trpc.auth.me.useQuery(undefined, {
     retry: false,
@@ -73,7 +76,9 @@ export function useAuth() {
       localStorage.removeItem('refreshToken');
       queryClient.clear();
     }
-  }, [logoutMutation]);
+    // Redirect to home page after logout
+    navigate({ to: '/' });
+  }, [logoutMutation, navigate]);
 
   // Refresh access token
   const refreshAccessToken = useCallback(async () => {

@@ -32,9 +32,8 @@ function VerifyMagicLinkPage() {
       try {
         await verifyMagicLink(token);
         setStatus('success');
-        setTimeout(() => {
-          navigate({ to: '/dashboard' });
-        }, 2000);
+        // Redirect immediately on success for better UX
+        navigate({ to: '/dashboard' });
       } catch (err: any) {
         setStatus('error');
         setError(err.message || 'Failed to verify magic link');

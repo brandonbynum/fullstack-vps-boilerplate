@@ -43,5 +43,8 @@
     "vitest": "^1.2.0",
     "@vitest/ui": "^1.2.0"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "packageManager": "pnpm@10.26.1"
 }

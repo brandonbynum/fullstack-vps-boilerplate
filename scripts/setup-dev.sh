@@ -105,6 +105,10 @@ pnpm --filter backend prisma:generate
 echo "Running database migrations..."
 pnpm --filter backend prisma:migrate
 
+# Seed database (creates default admin if configured)
+echo "Seeding database..."
+pnpm --filter backend db:seed
+
 # Build validators package
 echo "Building shared packages..."
 pnpm --filter validators build

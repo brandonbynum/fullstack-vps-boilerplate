@@ -66,6 +66,17 @@ podman run --rm \
     node:20-alpine \
     sh -c "npm install -g pnpm && pnpm install --frozen-lockfile && npx prisma@6 db push"
 
+# Seed database (creates default admin if configured)
+echo "Seeding database..."
+podman run --rm \
+    --network fullstack-app_internal \
+    -e DATABASE_URL="postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-fullstack}?schema=public" \
+    -e DEFAULT_ADMIN_EMAIL="${DEFAULT_ADMIN_EMAIL:-}" \
+    -v "$APP_DIR/apps/backend:/app:Z" \
+    -w /app \
+    node:20-alpine \
+    sh -c "npm install -g pnpm && pnpm install --frozen-lockfile && pnpm db:seed"
+
 # Start all services
 echo "Starting all services..."
 podman-compose -f infrastructure/podman/compose.yml -f infrastructure/podman/compose.prod.yml up -d
