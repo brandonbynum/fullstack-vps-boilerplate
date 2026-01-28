@@ -59,7 +59,7 @@ app.use(globalLimiter);
 // Stricter rate limiting for auth endpoints
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 requests per window
+  max: 10, // 10 requests per window
   message: { error: 'Too many authentication attempts, please try again later' },
   skipSuccessfulRequests: true,
   standardHeaders: true,
