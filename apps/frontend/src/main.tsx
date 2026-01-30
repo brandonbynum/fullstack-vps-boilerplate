@@ -5,14 +5,17 @@ import { RouterProvider } from '@tanstack/react-router';
 import { trpc, trpcClient } from './lib/trpc';
 import { queryClient } from './lib/query-client';
 import { router } from './router';
+import { ThemeProvider } from './contexts/ThemeContext';
 import './styles/globals.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
-    </trpc.Provider>
+    <ThemeProvider>
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      </trpc.Provider>
+    </ThemeProvider>
   </StrictMode>
 );

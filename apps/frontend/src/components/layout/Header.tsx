@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { Button } from '../ui/button';
+import { ThemeToggle } from '../ui/theme-toggle';
 import { useAuth } from '../../hooks/useAuth';
 import { LogOut, User, Settings, Shield } from 'lucide-react';
 
@@ -34,6 +35,7 @@ export function Header() {
           )}
         </div>
         <div className="flex items-center gap-4">
+          <ThemeToggle />
           {isAuthenticated ? (
             <>
               <span className="text-sm text-muted-foreground flex items-center gap-2">
