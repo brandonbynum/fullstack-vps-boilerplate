@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # Setup script for elonpredictions.com domain
-DOMAIN="elonpredictions.com"
-ADMIN_EMAIL="admin@elonpredictions.com"
+DOMAIN="example.com"
+ADMIN_EMAIL="admin@example.com"
 
 echo "=== Setting up ${DOMAIN} ==="
 echo ""
