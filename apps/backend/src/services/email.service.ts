@@ -84,17 +84,17 @@ class EmailService {
   // Check if email is properly configured (no network call)
   isEmailConfigured(): boolean {
     // Check if all required SMTP environment variables are set and not placeholder values
-    const hasValidHost = env.SMTP_HOST &&
+    const hasValidHost = Boolean(env.SMTP_HOST &&
       env.SMTP_HOST !== 'smtp.example.com' &&
-      !env.SMTP_HOST.includes('example');
+      !env.SMTP_HOST.includes('example'));
 
-    const hasValidUser = env.SMTP_USER &&
+    const hasValidUser = Boolean(env.SMTP_USER &&
       env.SMTP_USER !== 'noreply@example.com' &&
-      !env.SMTP_USER.includes('example');
+      !env.SMTP_USER.includes('example'));
 
-    const hasValidPassword = env.SMTP_PASSWORD &&
+    const hasValidPassword = Boolean(env.SMTP_PASSWORD &&
       env.SMTP_PASSWORD !== 'placeholder-smtp-password' &&
-      env.SMTP_PASSWORD !== 'placeholder';
+      env.SMTP_PASSWORD !== 'placeholder');
 
     return hasValidHost && hasValidUser && hasValidPassword;
   }

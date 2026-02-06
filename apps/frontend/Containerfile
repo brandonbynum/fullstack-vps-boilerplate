@@ -1,42 +1,36 @@
 # Frontend Containerfile
-# Simplified single-stage build
 
-FROM node:20-alpine AS builder
+# Stage 1: Dependencies
+FROM node:20-alpine AS deps
 WORKDIR /app
-
-# Install pnpm
 RUN npm install -g pnpm@10.26.1
+COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml* ./
+COPY apps/frontend/package.json ./apps/frontend/
+COPY packages/validators/package.json ./packages/validators/
+RUN pnpm install --no-frozen-lockfile --prod=false
 
-# Copy entire workspace
+# Stage 2: Development (Stop here for dev)
+FROM node:20-alpine AS dev
+WORKDIR /app
+RUN npm install -g pnpm@10.26.1
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Ready for pnpm dev
 
-# Install all dependencies
-RUN pnpm install --no-frozen-lockfile
-
-# Build arguments for environment
+# Stage 3: Builder
+FROM dev AS builder
 ARG VITE_API_URL
 ARG VITE_APP_NAME
-
 ENV VITE_API_URL=${VITE_API_URL:-""}
 ENV VITE_APP_NAME=${VITE_APP_NAME:-"Full-Stack App"}
-
-# Build frontend (skip tsc type checking)
 RUN cd apps/frontend && pnpm exec vite build
 
-# Production stage
+# Stage 4: Production
 FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
-
-# Copy custom nginx config
 COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf
-
-# Copy built static files
 COPY --from=builder /app/apps/frontend/dist .
-
 EXPOSE 8080
-
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/ || exit 1
-
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3     CMD wget --no-verbose --tries=1 --spider http://localhost:8080/ || exit 1
 CMD ["nginx", "-g", "daemon off;"]

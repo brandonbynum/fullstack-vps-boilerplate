@@ -8,7 +8,7 @@ import { createContext } from './trpc/context';
 import { env } from './config/env';
 import { logger } from './utils/logger';
 
-const app = express();
+const app: express.Application = express();
 
 // Trust proxy (important for rate limiting behind reverse proxy)
 app.set('trust proxy', 1);

@@ -1,5 +1,5 @@
 # Backend Containerfile
-# Multi-stage build for production
+# Multi-stage build
 
 # Stage 1: Dependencies
 FROM node:20-alpine AS deps
@@ -16,28 +16,32 @@ COPY packages/validators/package.json ./packages/validators/
 # Install dependencies
 RUN pnpm install --no-frozen-lockfile --prod=false
 
-# Stage 2: Builder
-FROM node:20-alpine AS builder
+# Stage 2: Development / Source (Stop here for dev)
+FROM node:20-alpine AS dev
 WORKDIR /app
 
 RUN npm install -g pnpm
 
-# Copy dependencies (pnpm hoists to root, so we only need root node_modules)
+# Copy dependencies
 COPY --from=deps /app/node_modules ./node_modules
 
 # Copy source code
 COPY . .
 
-# Generate Prisma client
+# Generate Prisma client (needed for dev and build)
 RUN cd apps/backend && npx prisma@6 generate
 
+# Stage 3: Builder (Production Build)
+FROM dev AS builder
+WORKDIR /app
+
 # Build validators package
-RUN cd packages/validators && npx -y tsc 2>&1 || echo "Validators build failed, continuing"
+RUN cd packages/validators && pnpm build
 
 # Build backend
-RUN cd apps/backend && pnpm build 2>&1 || echo "Backend build completed with warnings"
+RUN cd apps/backend && pnpm build
 
-# Stage 3: Production
+# Stage 4: Production Runner
 FROM node:20-alpine AS runner
 WORKDIR /app
 
@@ -45,8 +49,7 @@ WORKDIR /app
 RUN npm install -g pnpm
 
 # Create non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 backend
+RUN addgroup --system --gid 1001 nodejs &&     adduser --system --uid 1001 backend
 
 # Copy package files for production install
 COPY --from=builder /app/package.json /app/pnpm-workspace.yaml /app/pnpm-lock.yaml ./
@@ -76,8 +79,7 @@ ENV PORT=4000
 EXPOSE 4000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:4000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3     CMD wget --no-verbose --tries=1 --spider http://localhost:4000/health || exit 1
 
 # Start command
 CMD ["node", "apps/backend/dist/server.js"]

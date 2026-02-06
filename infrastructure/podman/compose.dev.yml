@@ -1,5 +1,5 @@
 # Development overrides
-# Usage: podman-compose -f compose.yml -f compose.dev.yml up
+# Usage: docker compose -f compose.yml -f compose.dev.yml up
 
 services:
   postgres:
@@ -10,14 +10,28 @@ services:
     build:
       context: ../..
       dockerfile: apps/backend/Containerfile
+      target: dev
     ports:
       - "4000:4000"
     environment:
       NODE_ENV: development
     volumes:
-      - ../../apps/backend/src:/app/src:ro
-    command: ["node", "--watch", "dist/server.js"]
+      - ../../apps/backend/src:/app/apps/backend/src:ro
+      - ../../packages/validators/src:/app/packages/validators/src:ro
+    working_dir: /app/apps/backend
+    command: ["pnpm", "dev"]
 
   frontend:
+    build:
+      context: ../..
+      dockerfile: apps/frontend/Containerfile
+      target: dev
     ports:
-      - "3000:80"
+      - "3000:3000"
+    environment:
+      VITE_API_URL: "/api"
+    volumes:
+      - ../../apps/frontend/src:/app/apps/frontend/src:ro
+      - ../../packages/validators/src:/app/packages/validators/src:ro
+    working_dir: /app/apps/frontend
+    command: ["pnpm", "dev", "--host"]

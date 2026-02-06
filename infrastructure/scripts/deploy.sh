@@ -34,9 +34,14 @@ echo "Pulling latest base images..."
 podman pull postgres:16-alpine
 podman pull nginx:alpine
 
-# Build containers
-echo "Building application containers..."
-podman-compose -f infrastructure/podman/compose.yml -f infrastructure/podman/compose.prod.yml build --no-cache
+# Build containers sequentially to save space
+echo "Building backend container..."
+podman-compose -f infrastructure/podman/compose.yml -f infrastructure/podman/compose.prod.yml build --no-cache backend
+podman system prune -f
+
+echo "Building frontend container..."
+podman-compose -f infrastructure/podman/compose.yml -f infrastructure/podman/compose.prod.yml build --no-cache frontend
+podman system prune -f
 
 # Start database first
 echo "Starting database..."
@@ -58,24 +63,24 @@ done
 
 # Sync database schema
 echo "Syncing database schema..."
-podman run --rm \
-    --network fullstack-app_internal \
+podman run --rm -e CI=true \
+    --network podman_internal \
     -e DATABASE_URL="postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-fullstack}?schema=public" \
-    -v "$APP_DIR/apps/backend:/app:Z" \
-    -w /app \
+    -v "$APP_DIR:/app:Z" \
+    -w /app/apps/backend \
     node:20-alpine \
-    sh -c "npm install -g pnpm && pnpm install --frozen-lockfile && npx prisma@6 db push"
+    sh -c "npm install -g pnpm && pnpm install --no-frozen-lockfile && npx prisma@6 db push"
 
 # Seed database (creates default admin if configured)
 echo "Seeding database..."
-podman run --rm \
-    --network fullstack-app_internal \
+podman run --rm -e CI=true \
+    --network podman_internal \
     -e DATABASE_URL="postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-fullstack}?schema=public" \
     -e DEFAULT_ADMIN_EMAIL="${DEFAULT_ADMIN_EMAIL:-}" \
-    -v "$APP_DIR/apps/backend:/app:Z" \
-    -w /app \
+    -v "$APP_DIR:/app:Z" \
+    -w /app/apps/backend \
     node:20-alpine \
-    sh -c "npm install -g pnpm && pnpm install --frozen-lockfile && pnpm db:seed"
+    sh -c "npm install -g pnpm && pnpm install --no-frozen-lockfile && pnpm db:seed"
 
 # Start all services
 echo "Starting all services..."

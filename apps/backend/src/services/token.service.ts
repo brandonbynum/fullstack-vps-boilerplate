@@ -36,7 +36,7 @@ class TokenService {
       type: 'access',
     };
     return jwt.sign(payload, env.JWT_SECRET, {
-      expiresIn: env.JWT_ACCESS_EXPIRY,
+      expiresIn: env.JWT_ACCESS_EXPIRY as any,
     });
   }
 
@@ -47,7 +47,7 @@ class TokenService {
       type: 'refresh',
     };
     return jwt.sign(payload, env.JWT_REFRESH_SECRET, {
-      expiresIn: env.JWT_REFRESH_EXPIRY,
+      expiresIn: env.JWT_REFRESH_EXPIRY as any,
     });
   }
 

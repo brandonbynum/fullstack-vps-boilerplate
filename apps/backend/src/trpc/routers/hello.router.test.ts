@@ -15,7 +15,7 @@ describe('Hello Router', () => {
   describe('getHello', () => {
     it('should return a hello message', async () => {
       // Get the procedure
-      const caller = helloRouter.createCaller({});
+      const caller = helloRouter.createCaller({ prisma: {} as any, user: null });
 
       // Call the procedure
       const result = await caller.getHello();
@@ -27,7 +27,7 @@ describe('Hello Router', () => {
     });
 
     it('should have valid response format', async () => {
-      const caller = helloRouter.createCaller({});
+      const caller = helloRouter.createCaller({ prisma: {} as any, user: null });
       const result = await caller.getHello();
 
       // Verify all expected fields exist
@@ -40,7 +40,7 @@ describe('Hello Router', () => {
 
   describe('getCustomHello', () => {
     it('should return a personalized greeting for valid input', async () => {
-      const caller = helloRouter.createCaller({});
+      const caller = helloRouter.createCaller({ prisma: {} as any, user: null });
 
       const result = await caller.getCustomHello({ name: 'Alice' });
 
@@ -51,7 +51,7 @@ describe('Hello Router', () => {
     });
 
     it('should work with different names', async () => {
-      const caller = helloRouter.createCaller({});
+      const caller = helloRouter.createCaller({ prisma: {} as any, user: null });
 
       const testCases = ['Bob', 'Charlie', 'Diana', 'Eve'];
 
@@ -62,7 +62,7 @@ describe('Hello Router', () => {
     });
 
     it('should reject empty name', async () => {
-      const caller = helloRouter.createCaller({});
+      const caller = helloRouter.createCaller({ prisma: {} as any, user: null });
 
       // Expect the call to throw validation error
       await expect(
@@ -71,7 +71,7 @@ describe('Hello Router', () => {
     });
 
     it('should reject name longer than 100 characters', async () => {
-      const caller = helloRouter.createCaller({});
+      const caller = helloRouter.createCaller({ prisma: {} as any, user: null });
 
       const longName = 'a'.repeat(101);
 
@@ -82,7 +82,7 @@ describe('Hello Router', () => {
     });
 
     it('should accept name at maximum length (100 characters)', async () => {
-      const caller = helloRouter.createCaller({});
+      const caller = helloRouter.createCaller({ prisma: {} as any, user: null });
 
       const maxName = 'a'.repeat(100);
 
@@ -93,7 +93,7 @@ describe('Hello Router', () => {
     });
 
     it('should handle special characters in names', async () => {
-      const caller = helloRouter.createCaller({});
+      const caller = helloRouter.createCaller({ prisma: {} as any, user: null });
 
       const specialNames = [
         'José',
@@ -111,7 +111,7 @@ describe('Hello Router', () => {
 
   describe('Response Format', () => {
     it('should include valid ISO timestamp', async () => {
-      const caller = helloRouter.createCaller({});
+      const caller = helloRouter.createCaller({ prisma: {} as any, user: null });
 
       const result = await caller.getHello();
 
@@ -129,7 +129,7 @@ describe('Hello Router', () => {
 
   describe('Multiple Calls', () => {
     it('should consistently return the same static message', async () => {
-      const caller = helloRouter.createCaller({});
+      const caller = helloRouter.createCaller({ prisma: {} as any, user: null });
 
       const result1 = await caller.getHello();
       const result2 = await caller.getHello();
@@ -140,7 +140,7 @@ describe('Hello Router', () => {
     });
 
     it('should return different timestamps on multiple calls', async () => {
-      const caller = helloRouter.createCaller({});
+      const caller = helloRouter.createCaller({ prisma: {} as any, user: null });
 
       const result1 = await caller.getHello();
       // Small delay to ensure different timestamp
